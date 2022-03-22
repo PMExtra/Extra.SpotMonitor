@@ -10,10 +10,10 @@ namespace Extra.SpotMonitor;
 
 public class SpotMonitorHostedService : IHostedService
 {
-    private IAbpApplicationWithInternalServiceProvider _abpApplication;
-
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _hostEnvironment;
+
+    private IAbpApplicationWithInternalServiceProvider _abpApplication;
 
     public SpotMonitorHostedService(IConfiguration configuration, IHostEnvironment hostEnvironment)
     {
@@ -23,7 +23,7 @@ public class SpotMonitorHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _abpApplication =  await AbpApplicationFactory.CreateAsync<SpotMonitorModule>(options =>
+        _abpApplication = await AbpApplicationFactory.CreateAsync<SpotMonitorModule>(options =>
         {
             options.Services.ReplaceConfiguration(_configuration);
             options.Services.AddSingleton(_hostEnvironment);

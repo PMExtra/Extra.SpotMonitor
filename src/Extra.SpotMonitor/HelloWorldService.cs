@@ -7,12 +7,12 @@ namespace Extra.SpotMonitor;
 
 public class HelloWorldService : ITransientDependency
 {
-    public ILogger<HelloWorldService> Logger { get; set; }
-
     public HelloWorldService()
     {
         Logger = NullLogger<HelloWorldService>.Instance;
     }
+
+    public ILogger<HelloWorldService> Logger { get; set; }
 
     public Task SayHelloAsync()
     {

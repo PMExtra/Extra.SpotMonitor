@@ -19,7 +19,7 @@ public class Program
 #endif
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .WriteTo.Async(c => c.File("Logs/logs.txt"))
+            .WriteTo.Async(c => c.File("App_Data/Logs/logs.txt"))
             .WriteTo.Async(c => c.Console())
             .CreateLogger();
 
@@ -28,10 +28,7 @@ public class Program
             Log.Information("Starting console host.");
 
             await Host.CreateDefaultBuilder(args)
-                .ConfigureServices(services =>
-                {
-                    services.AddHostedService<SpotMonitorHostedService>();
-                })
+                .ConfigureServices(services => { services.AddHostedService<SpotMonitorHostedService>(); })
                 .UseSerilog()
                 .RunConsoleAsync();
 

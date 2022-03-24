@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Extra.SpotMonitor": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

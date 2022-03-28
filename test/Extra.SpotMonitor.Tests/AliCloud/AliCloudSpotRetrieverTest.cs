@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using Extra.SpotMonitor.AliCloud;
 using Extra.SpotMonitor.AliCloud.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Extra.SpotMonitor.Tests.AliCloud;
 
 public sealed class AliCloudSpotRetrieverTest : SpotMonitorTestBase
 {
-    public AliCloudSpotRetrieverTest()
+    public AliCloudSpotRetrieverTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         AliCloudSpotRetriever = GetRequiredService<AliCloudSpotRetriever>();
     }

@@ -14,10 +14,10 @@ public class Program
         Log.Logger = new LoggerConfiguration()
 #if DEBUG
             .MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 #else
             .MinimumLevel.Information()
 #endif
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
             .WriteTo.Async(c => c.File("App_Data/Logs/logs.txt"))
             .WriteTo.Async(c => c.Console())

@@ -1,6 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using System;
 
-namespace Extra.SpotMonitor.AliCloud.Models;
+namespace Extra.SpotMonitor.AliCloud;
 
 public class AliCloudLanguage
 {
@@ -19,31 +19,25 @@ public class AliCloudLanguage
     /// </summary>
     public static readonly AliCloudLanguage Japanese = new("ja", "日本語");
 
-    public AliCloudLanguage(string value)
+    public AliCloudLanguage(string id, string? displayName = null)
     {
-        Value = value;
+        if (id.IsNullOrEmpty()) throw new ArgumentNullException(nameof(id));
+        Id = id;
+        DisplayName = displayName;
     }
 
-    public AliCloudLanguage(string value, string name)
-    {
-        Value = value;
-        Name = name;
-    }
+    public virtual string Id { get; }
 
-    [CanBeNull]
-    public string Name { get; }
-
-    [NotNull]
-    public string Value { get; }
+    public virtual string? DisplayName { get; }
 
     public static AliCloudLanguage[] GetAllLanguages()
     {
         return new[] { English, Chinese, Japanese };
     }
 
-    public override string ToString() => Value;
+    public override string ToString() => Id;
 
-    public static implicit operator string(AliCloudLanguage language) => language.Value;
+    public static implicit operator string(AliCloudLanguage language) => language.Id;
 
     public static implicit operator AliCloudLanguage(string value) => new(value);
 }

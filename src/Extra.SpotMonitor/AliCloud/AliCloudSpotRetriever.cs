@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using AlibabaCloud.OpenApiClient.Models;
 using AlibabaCloud.SDK.Ecs20140526;
 using AlibabaCloud.SDK.Ecs20140526.Models;
-using Extra.SpotMonitor.AliCloud.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -25,6 +24,8 @@ public class AliCloudSpotRetriever : ITransientDependency
 
     public virtual async Task<DescribeRegionsResponseBody> DescribeRegionsAsync(AliCloudLanguage acceptLanguage)
     {
+        if (acceptLanguage == null) throw new ArgumentNullException(nameof(acceptLanguage));
+
         var request = new DescribeRegionsRequest
         {
             AcceptLanguage = acceptLanguage
@@ -55,6 +56,10 @@ public class AliCloudSpotRetriever : ITransientDependency
     public virtual async Task<DescribeSpotPriceHistoryResponseBody> DescribeSpotPriceHistoryAsync(
         string regionId, string networkType, string instanceType, DateTime startTime, DateTime endTime)
     {
+        if (regionId.IsNullOrEmpty()) throw new ArgumentNullException(nameof(regionId));
+        if (networkType.IsNullOrEmpty()) throw new ArgumentNullException(nameof(networkType));
+        if (instanceType.IsNullOrEmpty()) throw new ArgumentNullException(nameof(instanceType));
+
         var isoStartTime = startTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
         var isoEndTime = endTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
 

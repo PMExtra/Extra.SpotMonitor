@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Extra.SpotMonitor.AliCloud;
-using Extra.SpotMonitor.AliCloud.Models;
 using Xunit;
 using Xunit.Abstractions;
 

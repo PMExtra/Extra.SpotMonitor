@@ -13,7 +13,7 @@ public class SpotMonitorHostedService : IHostedService
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _hostEnvironment;
 
-    private IAbpApplicationWithInternalServiceProvider _abpApplication;
+    private IAbpApplicationWithInternalServiceProvider _abpApplication = default!;
 
     public SpotMonitorHostedService(IConfiguration configuration, IHostEnvironment hostEnvironment)
     {
@@ -33,10 +33,6 @@ public class SpotMonitorHostedService : IHostedService
         });
 
         await _abpApplication.InitializeAsync();
-
-        var helloWorldService = _abpApplication.ServiceProvider.GetRequiredService<HelloWorldService>();
-
-        await helloWorldService.SayHelloAsync();
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

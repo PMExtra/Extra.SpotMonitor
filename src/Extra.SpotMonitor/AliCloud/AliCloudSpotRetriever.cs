@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using AlibabaCloud.OpenApiClient.Models;
 using AlibabaCloud.SDK.Ecs20140526;
@@ -6,6 +6,7 @@ using AlibabaCloud.SDK.Ecs20140526.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Tea;
 using Volo.Abp.DependencyInjection;
 
 namespace Extra.SpotMonitor.AliCloud;
@@ -30,27 +31,49 @@ public class AliCloudSpotRetriever : ITransientDependency
         {
             AcceptLanguage = acceptLanguage
         };
-        var response = await ApiClient.DescribeRegionsAsync(request);
 
-        Logger.LogDebug("Retrieved {count} regions with {language}.", response.Body.Regions.Region.Count, acceptLanguage);
-        return response.Body;
+        try
+        {
+            var response = await ApiClient.DescribeRegionsAsync(request);
+
+            Logger.LogDebug("Retrieved {count} regions with {language}.", response.Body.Regions.Region.Count, acceptLanguage);
+            return response.Body;
+        }
+        catch (TeaException ex)
+        {
+            Logger.LogWarning(
+                "Got an error while retrieving regions with {language}.{newLine}{message}",
+                acceptLanguage, Environment.NewLine, ex.Message);
+            throw;
+        }
     }
 
     public virtual async Task<DescribeInstanceTypesResponseBody> DescribeInstanceTypesAsync()
     {
         var request = new DescribeInstanceTypesRequest();
-        var response = await ApiClient.DescribeInstanceTypesAsync(request);
-        request.NextToken = response.Body.NextToken;
-        response.Body.NextToken = string.Empty;
-        while (request.NextToken is { Length: > 0 })
-        {
-            var next = await ApiClient.DescribeInstanceTypesAsync(request);
-            response.Body.InstanceTypes.InstanceType.AddRange(next.Body.InstanceTypes.InstanceType);
-            request.NextToken = next.Body.NextToken;
-        }
 
-        Logger.LogDebug("Retrieved {count} instance types.", response.Body.InstanceTypes.InstanceType.Count);
-        return response.Body;
+        try
+        {
+            var response = await ApiClient.DescribeInstanceTypesAsync(request);
+            request.NextToken = response.Body.NextToken;
+            response.Body.NextToken = string.Empty;
+            while (request.NextToken is { Length: > 0 })
+            {
+                var next = await ApiClient.DescribeInstanceTypesAsync(request);
+                response.Body.InstanceTypes.InstanceType.AddRange(next.Body.InstanceTypes.InstanceType);
+                request.NextToken = next.Body.NextToken;
+            }
+
+            Logger.LogDebug("Retrieved {count} instance types.", response.Body.InstanceTypes.InstanceType.Count);
+            return response.Body;
+        }
+        catch (TeaException ex)
+        {
+            Logger.LogWarning(
+                "Got an error while retrieving instance types.{newLine}{message}",
+                Environment.NewLine, ex.Message);
+            throw;
+        }
     }
 
     public virtual async Task<DescribeSpotPriceHistoryResponseBody> DescribeSpotPriceHistoryAsync(
@@ -71,19 +94,30 @@ public class AliCloudSpotRetriever : ITransientDependency
             StartTime = isoStartTime,
             EndTime = isoEndTime
         };
-        var response = await ApiClient.DescribeSpotPriceHistoryAsync(request);
-        request.Offset = response.Body.NextOffset;
-        response.Body.NextOffset = null;
-        while (request.Offset.HasValue)
-        {
-            var next = await ApiClient.DescribeSpotPriceHistoryAsync(request);
-            response.Body.SpotPrices.SpotPriceType.AddRange(next.Body.SpotPrices.SpotPriceType);
-            request.Offset = next.Body.NextOffset;
-        }
 
-        Logger.LogDebug(
-            "Retrieved {count} spot price records of {instanceType} at {regionId} from {startTime} to {endTime}.",
-            response.Body.SpotPrices.SpotPriceType.Count, instanceType, regionId, isoStartTime, isoEndTime);
-        return response.Body;
+        try
+        {
+            var response = await ApiClient.DescribeSpotPriceHistoryAsync(request);
+            request.Offset = response.Body.NextOffset;
+            response.Body.NextOffset = null;
+            while (request.Offset.HasValue)
+            {
+                var next = await ApiClient.DescribeSpotPriceHistoryAsync(request);
+                response.Body.SpotPrices.SpotPriceType.AddRange(next.Body.SpotPrices.SpotPriceType);
+                request.Offset = next.Body.NextOffset;
+            }
+
+            Logger.LogDebug(
+                "Retrieved {count} spot price records of {instanceType} at {regionId} from {startTime} to {endTime}.",
+                response.Body.SpotPrices.SpotPriceType.Count, instanceType, regionId, isoStartTime, isoEndTime);
+            return response.Body;
+        }
+        catch (TeaException ex)
+        {
+            Logger.LogWarning(
+                "Got an error while retrieving spot price history of {instanceType} at {regionId} from {startTime} to {endTime}.{newLine}{message}",
+                instanceType, regionId, isoStartTime, isoEndTime, Environment.NewLine, ex.Message);
+            throw;
+        }
     }
 }

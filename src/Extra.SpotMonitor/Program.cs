@@ -9,6 +9,8 @@ namespace Extra.SpotMonitor;
 
 public class Program
 {
+    public const string LogTemplate = "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}";
+
     public static async Task<int> Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
@@ -19,8 +21,8 @@ public class Program
             .MinimumLevel.Information()
 #endif
             .Enrich.FromLogContext()
-            .WriteTo.Async(c => c.File("App_Data/Logs/logs.txt"))
-            .WriteTo.Async(c => c.Console())
+            .WriteTo.Async(c => c.File("App_Data/Logs/logs.txt", outputTemplate: LogTemplate))
+            .WriteTo.Async(c => c.Console(outputTemplate: LogTemplate))
             .CreateLogger();
 
         try

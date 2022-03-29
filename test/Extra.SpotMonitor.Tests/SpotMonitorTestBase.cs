@@ -51,7 +51,7 @@ public class SpotMonitorTestBase : AbpIntegratedTest<SpotMonitorTestModule>
             .MinimumLevel.Override("Volo", LogEventLevel.Warning)
 #endif
             .Enrich.FromLogContext()
-            .WriteTo.TestOutput(TestOutputHelper)
+            .WriteTo.TestOutput(TestOutputHelper, outputTemplate: Program.LogTemplate)
             .CreateLogger();
 
         builder.AddSerilog();
